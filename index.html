@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Compte à rebours</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0f172a, #1e1b4b);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #ffffff;
+      overflow-x: hidden;
+      padding: 20px;
+    }
+
+    /* Écran du compte à rebours */
+    #countdown-screen {
+      text-align: center;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 25px;
+      letter-spacing: 1px;
+      color: #e2e8f0;
+    }
+
+    .timer {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    .time-box {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 20px 15px;
+      min-width: 85px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    .number {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #f43f5e;
+    }
+
+    .label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      margin-top: 5px;
+      color: #94a3b8;
+    }
+
+    /* Écran du Bouton (Minuit atteint) */
+    #button-screen {
+      display: none;
+      text-align: center;
+      animation: zoomIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .heart {
+      font-size: 5rem;
+      color: #f43f5e;
+      margin-bottom: 25px;
+      animation: pulse 1.5s infinite ease-in-out;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .open-btn {
+      background: linear-gradient(135deg, #f43f5e, #e11d48);
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(244, 63, 94, 0.4);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .open-btn:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 15px 30px rgba(244, 63, 94, 0.6);
+    }
+
+    .open-btn:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    /* Écran de la lettre */
+    #letter-screen {
+      display: none;
+      text-align: center;
+      max-width: 650px;
+      width: 100%;
+      animation: zoomIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .letter-container {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 15px;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .handwritten-letter {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      display: block;
+    }
+
+    /* Animations */
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.25); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes zoomIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Section 1 : Compte à Rebours -->
+  <div id="countdown-screen">
+    <h1>Rendez-vous à minuit...</h1>
+    <div class="timer">
+      <div class="time-box">
+        <div class="number" id="hours">00</div>
+        <div class="label">Heures</div>
+      </div>
+      <div class="time-box">
+        <div class="number" id="minutes">00</div>
+        <div class="label">Minutes</div>
+      </div>
+      <div class="time-box">
+        <div class="number" id="seconds">00</div>
+        <div class="label">Secondes</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2 : Bouton Déverrouillé à Minuit -->
+  <div id="button-screen">
+    <div class="heart" onclick="showLetter()">❤️</div>
+    <br />
+    <button class="open-btn" onclick="showLetter()">Ouvrir la lettre</button>
+  </div>
+
+  <!-- Section 3 : Affichage de la Lettre -->
+  <div id="letter-screen">
+    <div class="letter-container">
+      <img src="image.png" alt="Lettre d'amour" class="handwritten-letter" />
+    </div>
+  </div>
+
+  <script>
+    function updateCountdown() {
+      const now = new Date();
+      const midnight = new Date();
+      
+      // Fixe la cible à minuit
+      midnight.setHours(24, 0, 0, 0);
+
+      const diff = midnight - now;
+
+      // Si minuit est atteint
+      if (diff <= 0) {
+        document.getElementById('countdown-screen').style.display = 'none';
+        // Affiche l'écran du bouton s'il n'a pas encore cliqué sur la lettre
+        if (document.getElementById('letter-screen').style.display !== 'block') {
+          document.getElementById('button-screen').style.display = 'block';
+        }
+        return;
+      }
+
+      // Calcul heures / minutes / secondes
+      const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const m = Math.floor((diff / (1000 * 60)) % 60);
+      const s = Math.floor((diff / 1000) % 60);
+
+      document.getElementById('hours').textContent = String(h).padStart(2, '0');
+      document.getElementById('minutes').textContent = String(m).padStart(2, '0');
+      document.getElementById('seconds').textContent = String(s).padStart(2, '0');
+    }
+
+    // Fonction appelée au clic sur le bouton ou le cœur
+    function showLetter() {
+      document.getElementById('button-screen').style.display = 'none';
+      document.getElementById('letter-screen').style.display = 'block';
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+  </script>
+</body>
+</html>
